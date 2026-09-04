@@ -162,7 +162,8 @@ cython_debug/
 .idea/
 
 # Custom for this project
-.db
+
+sif_engine.db
 
 *_REPORT.md
 DELIVERY_*.md
