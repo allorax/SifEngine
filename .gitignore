@@ -163,7 +163,7 @@ cython_debug/
 
 # Custom for this project
 
-sif_engine.db
+sif_engine*.db
 
 *_REPORT.md
 DELIVERY_*.md
