@@ -162,6 +162,7 @@ cython_debug/
 .idea/
 
 # Custom for this project
+*.db
 
 
 *_REPORT.md
