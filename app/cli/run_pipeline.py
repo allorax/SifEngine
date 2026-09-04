@@ -2,6 +2,8 @@
 import argparse
 import sys
 import json
+import matplotlib
+matplotlib.use('Agg')
 from app.database import SessionLocal
 from app.services.pipeline import execute_pipeline
 

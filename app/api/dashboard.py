@@ -70,3 +70,52 @@ def get_dashboard_summary(db: Session = Depends(get_db)):
         "increasing_clusters": increasing_clusters,
         "recent_activity": recent_activity
     }
+
+
+@router.get("/forecasts")
+def get_all_forecasts(db: Session = Depends(get_db)):
+    """Retrieve monthly forecast time-series data for all hazard clusters."""
+    rows = db.query(Cluster, Forecast, RiskScore).join(
+        Forecast, Cluster.id == Forecast.cluster_id
+    ).join(
+        RiskScore, Cluster.id == RiskScore.cluster_id
+    ).filter(Cluster.cluster_num != -1).all()
+
+    result = []
+    for c, f, r in rows:
+        forecast_data = json.loads(f.forecast_json) if f.forecast_json else []
+        result.append({
+            "cluster_id": c.id,
+            "cluster_num": c.cluster_num,
+            "label": c.label,
+            "report_count": c.report_count,
+            "risk_score": r.risk_score,
+            "trend": f.trend_classification,
+            "forecast": forecast_data
+        })
+    return result
+
+
+@router.get("/risk-overview")
+def get_risk_overview(db: Session = Depends(get_db)):
+    """Retrieve complete 5-factor risk score breakdown for all active clusters."""
+    rows = db.query(Cluster, RiskScore).join(
+        RiskScore, Cluster.id == RiskScore.cluster_id
+    ).filter(Cluster.cluster_num != -1).order_by(RiskScore.risk_score.desc()).all()
+
+    result = []
+    for c, r in rows:
+        result.append({
+            "cluster_id": c.id,
+            "cluster_num": c.cluster_num,
+            "label": c.label,
+            "report_count": c.report_count,
+            "risk_score": r.risk_score,
+            "frequency": r.frequency,
+            "near_miss_intensity": r.near_miss_intensity,
+            "severity": r.severity,
+            "trend": r.trend,
+            "recency": r.recency
+        })
+    return result
+

@@ -68,8 +68,17 @@ def get_similar_reports(
 
     target_vec = deserialize_vector(target_report.embedding)
 
-    # Load all stored reports for similarity lookup
-    all_db_reports = db.query(Report.id, Report.description, Report.employer, Report.timestamp, Report.severity_info, Report.embedding).all()
+    # Filter candidate reports efficiently to avoid unbounded full DB deserialization
+    query = db.query(
+        Report.id, Report.description, Report.employer, Report.timestamp, Report.severity_info, Report.embedding
+    ).filter(Report.embedding.isnot(None))
+
+    if target_report.cluster_id is not None:
+        same_cluster = query.filter(Report.cluster_id == target_report.cluster_id).filter(Report.id != report_id).limit(1000).all()
+        other_clusters = query.filter(Report.cluster_id != target_report.cluster_id).filter(Report.id != report_id).limit(1500).all()
+        all_db_reports = same_cluster + other_clusters
+    else:
+        all_db_reports = query.filter(Report.id != report_id).limit(3000).all()
 
     all_reports = []
     for r in all_db_reports:

@@ -14,6 +14,8 @@ Complete end-to-end orchestration with:
 import sys
 import json
 import time
+import matplotlib
+matplotlib.use('Agg')
 from pathlib import Path
 from typing import Dict, Any, Optional
 import argparse
@@ -196,10 +198,10 @@ class ResultsAnalyzer:
                 if forecast_data and isinstance(forecast_data, list):
                     print(f"     Forecast Points: {len(forecast_data)}")
                     if forecast_data:
-                        avg_forecast = np.mean(
-                            [f.get("forecast", 0) for f in forecast_data if "forecast" in f]
-                        )
-                        print(f"     Avg Forecast Value: {avg_forecast:.2f}")
+                        counts = [f.get("count", f.get("forecast", 0)) for f in forecast_data if isinstance(f, dict)]
+                        if counts:
+                            avg_forecast = float(np.mean(counts))
+                            print(f"     Avg Forecast Value: {avg_forecast:.2f}")
             except Exception:
                 pass
 

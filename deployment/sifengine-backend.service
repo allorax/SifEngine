@@ -1,0 +1,16 @@
+[Unit]
+Description=SIFEngine FastAPI Backend Analytics Service
+After=network.target
+
+[Service]
+Type=simple
+User=obsidian
+WorkingDirectory=/home/obsidian/Documents/SIFBACKUPBACKENDV1/SIF (copy 1)/SifEngine
+ExecStart=/home/obsidian/Documents/SIFBACKUPBACKENDV1/SIF (copy 1)/SifEngine/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+Restart=always
+RestartSec=5
+Environment=PORT=8000
+Environment=PYTHONPATH=/home/obsidian/Documents/SIFBACKUPBACKENDV1/SIF (copy 1)/SifEngine
+
+[Install]
+WantedBy=multi-user.target

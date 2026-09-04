@@ -4,6 +4,8 @@ import json
 import math
 from typing import Optional
 
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 from app.ml.trend import aggregate_monthly_counts

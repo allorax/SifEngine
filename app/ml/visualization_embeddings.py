@@ -4,6 +4,8 @@ import json
 import random
 from typing import Optional
 
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.decomposition import PCA

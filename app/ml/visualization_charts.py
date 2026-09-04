@@ -2,6 +2,8 @@
 
 from typing import Optional
 
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 from app.ml.visualization_common import database_session, ensure_output_dir

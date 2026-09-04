@@ -11,15 +11,16 @@ engine = create_engine(
     pool_recycle=3600
 )
 
-# Enable SQLite optimizations for better transaction handling
+# Enable SQLite WAL mode and optimizations for non-blocking concurrent reads & writes
 @event.listens_for(engine, "connect")
 def set_sqlite_pragma(dbapi_conn, connection_record):
-    """Configure SQLite for better transaction handling and persistence."""
+    """Configure SQLite for high-performance WAL mode and concurrent reading."""
     cursor = dbapi_conn.cursor()
-    cursor.execute("PRAGMA journal_mode=DELETE")
-    cursor.execute("PRAGMA synchronous=FULL")
+    cursor.execute("PRAGMA journal_mode=WAL")
+    cursor.execute("PRAGMA synchronous=NORMAL")
     cursor.execute("PRAGMA cache_size=-64000")
     cursor.execute("PRAGMA temp_store=MEMORY")
+    cursor.execute("PRAGMA busy_timeout=30000")
     cursor.close()
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -36,13 +37,21 @@ def get_db():
 
 
 def init_database():
-    """Create tables and apply the small backwards-compatible cache migration."""
+    """Create tables and apply indexes & cache migration."""
     Base.metadata.create_all(bind=engine)
     columns = {column["name"] for column in inspect(engine).get_columns("reports")}
-    if "embedding_model" not in columns:
-        with engine.begin() as connection:
+    with engine.begin() as connection:
+        if "embedding_model" not in columns:
             connection.execute(text("ALTER TABLE reports ADD COLUMN embedding_model VARCHAR"))
-            connection.execute(text(
-                "CREATE INDEX IF NOT EXISTS ix_reports_embedding_cache "
-                "ON reports (embedding_model, description)"
-            ))
+        connection.execute(text(
+            "CREATE INDEX IF NOT EXISTS ix_reports_embedding_cache "
+            "ON reports (embedding_model, description)"
+        ))
+        connection.execute(text(
+            "CREATE INDEX IF NOT EXISTS ix_reports_cluster_id "
+            "ON reports (cluster_id)"
+        ))
+        connection.execute(text(
+            "CREATE INDEX IF NOT EXISTS ix_reports_state "
+            "ON reports (state)"
+        ))
