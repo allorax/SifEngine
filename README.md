@@ -1,4 +1,4 @@
-# SIH26165 OSHA Safety Incident & Hazard Pattern Analytics Engine
+# SIH26165 SIF Safety Incident & Hazard Pattern Analytics Engine
 
 A fully working MVP backend system that processes OSHA safety incident reports through an end-to-end pipeline: data cleaning, NLP extraction, semantic embeddings, HDBSCAN clustering, risk scoring, trend analysis, and forecasting.
 
