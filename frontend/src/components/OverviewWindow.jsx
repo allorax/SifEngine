@@ -571,8 +571,7 @@ export default function OverviewWindow({ onNavigateTab }) {
                     }}
                     title={report.description || ''}
                   >
-                    {report.description ||
-                      'No description available.'}
+                    {report.description || 'No description available.'}
                   </span>
                 </div>
               ))}
