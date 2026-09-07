@@ -238,9 +238,7 @@ export default function OverviewWindow({ onNavigateTab }) {
           <div className="panel-title">
             <FileText /> Recent Reported Safety Incidents
           </div>
-          <button className="btn-secondary" onClick={() => onNavigateTab('explorer')}>
-            Search All Incidents &rarr;
-          </button>
+          
         </div>
 
         <div style={{ overflowX: 'auto' }}>
